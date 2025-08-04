@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  SCCACHE_GHA_ENABLED: 'true'
+  ANDROID_NDK_VERSION: r24
+  ANDROID_TARGET_SDK_VERSION: 24
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    strategy:
+      matrix:
+        config:
+          - { os: macos-14, xcode: 15.4 }
+    runs-on: ${{ matrix.config.os }}
+    needs: build-ios
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: '0'
+
+      - name: Xcode Select Version
+        uses: mobiledevops/xcode-select-version-action@v1
+        with:
+          xcode-select-version: ${{ matrix.config.xcode }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: node-ios-*
+          merge-multiple: true
+          path: out_ios
+
+      # Python 3.12 (chosen by configure.py) doesn't have support for distutils
+      # https://github.com/nodejs/node-gyp/issues/2869 workaround
+      - name: Generate config.gypi
+        run: |
+          python3.12 -m venv .
+          source bin/activate
+          python3.12 -m pip install setuptools
+          ./configure
+
+      - name: Combine
+        run: |
+          python3.12 -m venv .
+          source bin/activate
+          python3.12 -m pip install setuptools
+          ./tools/ios_framework_prepare.sh combine_frameworks
+          mkdir -p artifacts/include
+          cp -R out_ios/NodeMobile.xcframework artifacts/
+          ./tools/copy_libnode_headers.sh ios
+          cp -R out_ios/libnode/include/* artifacts/include
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nodejs-mobile-ios
+          path: artifacts
+
+      - uses: geekyeggo/delete-artifact@v5
+        with:
+          name: node-ios-*
