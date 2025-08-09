@@ -14,16 +14,6 @@ jobs:
       XCODE_VERSION: 15.2
 
     steps:
-      - name: Free Up Disk Space
-        run: |
-          sudo rm -rf /Library/Frameworks/Mono.framework
-          sudo rm -rf /Library/Frameworks/Xamarin.iOS.framework
-          sudo rm -rf /Library/Frameworks/Xamarin.Android.framework
-          sudo rm -rf /Users/runner/Library/Android
-          sudo rm -rf /usr/local/share/powershell
-          # Remove old Xcodes, keep only desired version
-          sudo find /Applications -type d -name "Xcode_*.app" ! -name "Xcode_${XCODE_VERSION}.app" -prune -exec rm -rf "{}" \;
-
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
