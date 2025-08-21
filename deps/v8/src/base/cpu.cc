@@ -792,8 +792,10 @@ CPU::CPU()
   //maybe related zsh: illegal hardware instruction  ./node-arm64
   has_jscvt_ = false;
 #endif  // V8_OS_WIN
-    has_jscvt_ = HasListItem(features, "jscvt");
-    delete[] features;
+  // TODO: build error features is not defined
+  // has_jscvt_ = HasListItem(features, "jscvt");
+  // delete[] features;
+  has_jscvt_ = false;
   }
 
 #elif V8_OS_MACOSX
