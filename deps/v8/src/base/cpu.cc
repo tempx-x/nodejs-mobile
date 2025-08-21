@@ -788,7 +788,9 @@ CPU::CPU()
 
 #elif V8_OS_DARWIN
   // ARM64 Macs always have JSCVT.
-  has_jscvt_ = true;
+  // has_jscvt_ = true;
+  //maybe related zsh: illegal hardware instruction  ./node-arm64
+  has_jscvt_ = false;
 #endif  // V8_OS_WIN
     has_jscvt_ = HasListItem(features, "jscvt");
     delete[] features;
@@ -799,8 +801,6 @@ CPU::CPU()
   has_jscvt_ = true;
 
 
-//maybe related zsh: illegal hardware instruction  ./node-arm64
-has_jscvt_ = false;
 
 
 #elif V8_HOST_ARCH_PPC || V8_HOST_ARCH_PPC64
