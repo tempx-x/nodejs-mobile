@@ -796,7 +796,7 @@ CPU::CPU()
   // has_jscvt_ = HasListItem(features, "jscvt");
   // delete[] features;
   has_jscvt_ = false;
-  }
+
 
 #elif V8_OS_MACOSX
   // ARM64 Macs always have JSCVT.
